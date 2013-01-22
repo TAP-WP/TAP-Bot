@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+import sys
+
 from ceterach.api import MediaWiki
 
 import mwparserfromhell as mwp
@@ -35,7 +37,7 @@ class VitalArticleBot:
                                    apnamespace=4,
                                    apfilterredir="nonredirects",
                                    limit=100):
-            yield self.api.page(d['title'])
+            yield self.api.page(d['title'], follow_redirects=True)
 
     def process_vital_article(self, va_page):
         lines = va_page.content.splitlines(True)
@@ -49,7 +51,8 @@ class VitalArticleBot:
             if len(cls) > 1:
                 if len(icon_tl) > 1:
                     for icon_thing, template in zip(cls, icon_tl):
-                        icon_thing.get("1").value = template
+                        print(icon_thing, template)
+                        template.get("1").value = icon_thing
                 else:
                     # Article is a delisted GA or FA and needs a new icon
                     new_tl = mwp.nodes.Template("Icon", cls[1])
@@ -64,6 +67,7 @@ class VitalArticleBot:
     def get_article_cls(self, p):
         if not p.is_talkpage:
             p = p.toggle_talk()
+        p = p.redirect_target if p.is_redirect else p
         code = mwp.parse(p.content)
         cls = {}
         got_cls, got_delist = False, False
@@ -86,7 +90,7 @@ class VitalArticleBot:
                 return [cls['class'], cls['delist']]
         else:
             if not cls:
-                raise WTF("No quality rating on " + repr(p.title))
+                print(WTF("No quality rating on " + repr(p.title), file=sys.stderr)
         return list(cls.values())
 		
     def run(self):
@@ -99,4 +103,3 @@ class VitalArticleBot:
 
 if __name__ == "__main__":
     main()
-    
