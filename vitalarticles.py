@@ -47,7 +47,10 @@ class VitalArticleBot:
             code_line = mwp.parse(line)
             *icon_tl, article = code_line.filter(forcetype=allowed)
             article_tp = self.api.page("Talk:" + str(article.title))
-            cls = self.get_article_cls(article_tp)
+            try:
+                cls = self.get_article_cls(article_tp)
+            except Exception as e:
+                print("Something broke:", e, file=sys.stderr)
             if len(cls) > 1:
                 if len(icon_tl) > 1:
                     for icon_thing, template in zip(cls, icon_tl):
@@ -90,7 +93,7 @@ class VitalArticleBot:
                 return [cls['class'], cls['delist']]
         else:
             if not cls:
-                print(WTF("No quality rating on " + repr(p.title), file=sys.stderr)
+                print(WTF("No quality rating on " + repr(p.title)), file=sys.stderr)
         return list(cls.values())
 		
     def run(self):
