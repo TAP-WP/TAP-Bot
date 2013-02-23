@@ -61,7 +61,10 @@ class VitalArticleBot:
                     new_tl = mwp.nodes.Template("Icon", cls[1])
                     icon_tl += (new_tl,)
             else:
-                icon_tl[0].get("1").value = cls
+                try:
+                    icon_tl[0].get("1").value = cls
+                except IndexError:
+                    print("Line exploded:", repr(line), file=sys.stderr)
             if len(icon_tl) > 1:
                 code_line.insert(2, " " + str(icon_tl[-1]))
             lines[i] = str(code_line)
