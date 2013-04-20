@@ -12,7 +12,7 @@ allowed = mwp.nodes.Template, mwp.nodes.Wikilink
 
 def main():
     api = MediaWiki()
-    api.login("TAP_Bot", "password")
+    api.login("TAP_Bot", "PASSWORD")
     bot = VitalArticleBot(api)
     if bot.is_allowed:
         bot.run()
@@ -105,7 +105,10 @@ class VitalArticleBot:
             text = self.process_vital_article(va_page)
             if text != va_page.content:
                 summary = "Updating qualities for vital articles"
+            try:
                 print(va_page.edit(text, summary, bot=True))
+            except Exception as e:
+                print("Something exploded: {!r}".format(e), file=sys.stderr)
 
 if __name__ == "__main__":
     main()
