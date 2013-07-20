@@ -103,11 +103,11 @@ class VitalArticleBot:
     def run(self):
         for va_page in self.list_vital_articles():
             print(va_page, "is being checked")
-            text = self.process_vital_article(va_page)
-            if text != va_page.content:
-                summary = "Updating qualities for vital articles"
             try:
-                print(va_page.edit(text, summary, bot=True))
+                text = self.process_vital_article(va_page)
+                if text != va_page.content:
+                    summary = "Updating qualities for vital articles"
+                    print(va_page.edit(text, summary, bot=True))
             except Exception as e:
                 print("Something exploded: {!r}".format(e), file=sys.stderr)
 
